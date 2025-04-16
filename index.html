@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gold Pulse Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+      background-color: #f5f5f5;
+    }
+    h2 {
+      color: #d4af37;
+    }
+    .section {
+      background: white;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    pre {
+      background: #eee;
+      padding: 0.5rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 Gold Pulse Dashboard</h1>
+
+  <div class="section">
+    <h2>🌍 Global Gold Price (Last 90 Days)</h2>
+    <pre id="goldPriceOutput">Loading...</pre>
+  </div>
+
+  <div class="section">
+    <h2>🇮🇳 India City-wise Gold Prices</h2>
+    <pre id="indiaGoldOutput">Loading...</pre>
+  </div>
+
+  <div class="section">
+    <h2>🔮 Gold Price Prediction</h2>
+    <pre id="predictOutput">Loading...</pre>
+  </div>
+
+  <div class="section">
+    <h2>📰 Latest War News</h2>
+    <ul id="warNewsOutput">Loading...</ul>
+  </div>
+
+  <script>
+    const BASE_URL = 'http://127.0.0.1:8000';
+
+    async function fetchData(endpoint, callback) {
+      try {
+        const res = await fetch(`${BASE_URL}${endpoint}`);
+        const data = await res.json();
+        callback(data);
+      } catch (error) {
+        console.error("Error fetching", endpoint, error);
+      }
+    }
+
+    fetchData("/gold-price", data => {
+      document.getElementById('goldPriceOutput').textContent = JSON.stringify(data.gold_prices.slice(-5), null, 2);
+    });
+
+    fetchData("/gold-price/india", data => {
+      document.getElementById('indiaGoldOutput').textContent = JSON.stringify(data.gold_prices_india, null, 2);
+    });
+
+    fetchData("/gold-price/predict", data => {
+      document.getElementById('predictOutput').textContent = JSON.stringify(data, null, 2);
+    });
+
+    fetchData("/war-news", data => {
+      const ul = document.getElementById('warNewsOutput');
+      ul.innerHTML = '';
+      data.latest_war_news.forEach(news => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${news.link}" target="_blank">${news.title}</a>`;
+        ul.appendChild(li);
+      });
+    });
+  </script>
+
+</body>
+</html>
