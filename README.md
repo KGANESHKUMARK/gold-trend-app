@@ -1,0 +1,1 @@
+# gold-trend-app
